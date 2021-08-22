@@ -31,7 +31,7 @@ async def create_user(username: str, income: int, pay_date: int):
 
 
 async def update_user(username: str, data: dict):
-    result = await users.update_one({username: username}, {"$set": data})
+    result = await users.update_one({"username": username}, {"$set": data})
     if result.modified_count:
         return True
     else: 

@@ -15,6 +15,7 @@ async def save_income_and_paydate(username, income, pay_date):
 async def save_mi(username, mi):
     user = await read_user(username=username)
     user.update(dict(mi=mi))
+    print("inside save_mi:", user)
     result = await update_user(username=username, data=user)
     if result:
         return True
@@ -25,6 +26,7 @@ async def save_mi(username, mi):
 async def save_me(username, me):
     user = await read_user(username=username)
     user.update(dict(me=me))
+    print("inside save_me:", user)
     result = await update_user(username=username, data=user)
     if result:
         return True
@@ -34,4 +36,8 @@ async def save_me(username, me):
 
 async def get_detail(username):
     user = await read_user(username)
-    return user
+    print("inside get_detail:", user)
+    if user:
+        return user["income"], user["pay_date"], user["mi"], user["me"]
+    else:
+        None
