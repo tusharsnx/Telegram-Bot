@@ -33,7 +33,7 @@ async def start(text, username):
 async def income_and_date(text, username):
     restart = check_restart(text)
     if restart:
-        return await start(text)
+        return await start(text, username)
     state_id = state_ids["income_and_date"]
     is_ok, result = await check_prev_state(text, state_id-1, username)
     
