@@ -186,7 +186,7 @@ def check_income_and_paydate(text):
 
 def check_money(text):
     try:
-        mi = int(text)
+        mi = float(text)
         if mi>=0:
             return mi
         else:
