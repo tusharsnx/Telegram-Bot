@@ -25,7 +25,7 @@ active_users_state = dict()
 
 
 async def generate_response(text, username):
-    print(active_users, active_users_state)
+    print(active_users_state)
     # user is active
     if username in active_users:
         print("user found active")
@@ -36,6 +36,7 @@ async def generate_response(text, username):
         else:
             active_users_state[username] = next_state_id
         print("user next state:", next_state_id)
+        print("users state after:", active_users_state)
         return resp
 
     # user is not active
@@ -48,4 +49,5 @@ async def generate_response(text, username):
         else:
             active_users_state[username] = next_state_id
         print("user next state:", next_state_id)
+        print("users state after:", active_users_state)
         return resp
