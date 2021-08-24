@@ -230,7 +230,7 @@ async def check_prev_state(text, state_id, username):
             return False, response_text
         else:
             income, pay_date = result
-            await save_income_and_paydate(username, float(income), float(pay_date))
+            await save_income_and_paydate(username, float(income), int(pay_date))
             return True, (income, pay_date)
         
     elif states[state_id]=="mi":

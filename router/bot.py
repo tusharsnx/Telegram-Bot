@@ -3,7 +3,7 @@ from responses.generate_responses import generate_response
 from fastapi import APIRouter, Body, Response, BackgroundTasks
 import aiohttp
 import dotenv
-from router.utils import send_message
+from router.utils import send_message, set_webhook
 
 router = APIRouter()
 
@@ -11,7 +11,8 @@ dotenv.load_dotenv(dotenv.find_dotenv())
 
 API_KEY = os.getenv("API_KEY")
 
-
+# setting up webhook using WEBHOOK env
+set_webhook()
 
 @router.get("/")
 async def index():
