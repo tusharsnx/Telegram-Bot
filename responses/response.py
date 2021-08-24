@@ -39,7 +39,7 @@ async def income_and_date(text, username):
     
     # checking if user came from close_conversation state
     if not is_ok:
-        is_ok, result = await check_prev_state(text, state_ids["close_conversation"], username)
+        is_ok, result = await check_prev_state(text, state_ids["close_conversation"]-1, username)
     
     if not is_ok:
         print("income error")
