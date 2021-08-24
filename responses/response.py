@@ -171,7 +171,7 @@ def check_income_and_paydate(text):
         if len(texts)==2:
             income = texts[0]
             date = int(texts[1])
-            if date>=1 and date<31 and check_money(income):
+            if date>=1 and date<=31 and check_money(income):
                 return income, date
             
             else:
