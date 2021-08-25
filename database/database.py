@@ -1,5 +1,4 @@
 import os
-import asyncio
 
 from motor import motor_asyncio
 import urllib.parse

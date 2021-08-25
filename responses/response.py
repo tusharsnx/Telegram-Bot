@@ -5,15 +5,17 @@ from users import (
     get_detail
 )
 
-states_list = ["start", "income_and_date", "mi", "me", "show_detail", "close_conversation", "cancel"]
-states = dict()
-state_ids = dict()
+states_list = ["start", "income_and_date", "mi", "me", "show_detail", "close_conversation", "cancel"]   # state names in order
+states = dict()     # state_id -> state
+state_ids = dict()  # state -> state_id
 
+# constructing states and state_ids dict
 for i, state in enumerate(states_list):
     state_ids[state]=i
     states[i]=state
 
 
+# Entry point for user
 async def start(text, username):
     state_id = state_ids["start"]
     response_text = """
@@ -27,20 +29,28 @@ async def start(text, username):
     5. Just saving
         """
     
+    # returning next state_id for the user
     return state_id+1, response_text
 
 
+## state function for response 
+
+# income and paydate
 async def income_and_date(text, username):
+    # checking "restart"
     restart = check_restart(text)
+    # revert to start() if "restart"
     if restart:
         return await start(text, username)
     state_id = state_ids["income_and_date"]
+    # validating prev state user response
     is_ok, result = await check_prev_state(text, state_id-1, username)
     
     # checking if user came from close_conversation state
     if not is_ok:
         is_ok, result = await check_prev_state(text, state_ids["close_conversation"]-1, username)
     
+    # if invalid response prompt user to enter correct response, state_id remains same
     if not is_ok:
         print("income error")
         return state_id, result
@@ -56,6 +66,7 @@ async def income_and_date(text, username):
         return state_id+1, response_text
 
 
+# monthly installments
 async def mi(text, username):
     restart = check_restart(text)
     if restart:
@@ -75,6 +86,7 @@ async def mi(text, username):
         return state_id+1, response_text
 
 
+# other monthly expenses
 async def me(text, username):
     restart = check_restart(text)
     if restart:
@@ -100,6 +112,7 @@ async def me(text, username):
         return state_id+1, response_text
 
 
+# showing entered details
 async def show_details(text, username):
     restart = check_restart(text)
     if restart:
@@ -115,7 +128,7 @@ async def show_details(text, username):
         result = await get_detail(username)
         if result:
             income, pay_date, mi, me = result
-            response_text =f"""
+            response_text =f""" 
             🤑  income : {income}
         🔥 Pay date : {pay_date}
         🌲 Monthly Investments : {mi}
@@ -125,11 +138,13 @@ async def show_details(text, username):
             """
             return state_id+1, response_text
         
+        # error in api response
         else:
             response_text = "sorry! something went wrong. Kindly start again."
             return state_ids["start"], response_text
     
 
+# close conversation if "y"
 async def close_conversation(text, username):
     restart = check_restart(text)
     if restart:
@@ -140,11 +155,14 @@ async def close_conversation(text, username):
         print("closing error")
         return state_id, result
     
+    
     else:
+        # close conversation
         if result.lower()=="y":
             response_text = "😍 Awesome"
             return -1, response_text
-        
+       
+        # revert to income and paydate entry for "n"
         else:
             return await income_and_date(text, username)
 
@@ -152,6 +170,9 @@ async def close_conversation(text, username):
 def cancel(text, username):
     response_text = "Bye!"
     return -1, response_text
+
+
+## validation utilities
 
 
 def check_start(text):
@@ -218,7 +239,7 @@ async def check_prev_state(text, state_id, username):
     if states[state_id]=="start":
         result = check_start(text)
         if result is None:
-            response_text = "Enter correct response please..."
+            response_text = "Enter correct response please."
             return False, response_text
         else:
             return True, result
@@ -226,43 +247,46 @@ async def check_prev_state(text, state_id, username):
     elif states[state_id]=="income_and_date":
         result = check_income_and_paydate(text)
         if result is None:
-            response_text = "Enter correct response please..."
+            response_text = "Enter correct response please."
             return False, response_text
         else:
             income, pay_date = result
+            # save to db
             await save_income_and_paydate(username, float(income), int(pay_date))
             return True, (income, pay_date)
         
     elif states[state_id]=="mi":
         result = check_money(text)
         if result is None:
-            response_text = "Enter correct response please..."
+            response_text = "Enter correct response please."
             return False, response_text
         else:
             mi = result
+            # save to db
             await save_mi(username, mi=mi)
             return True, mi
     
     elif states[state_id]=="me":
         result = check_money(text)
         if result is None:
-            response_text = "Enter correct response please..."
+            response_text = "Enter correct response please."
             return False, response_text
         else:
             me = result
+            # save to db
             await save_me(username, me=me)
             return True, me
     
     elif states[state_id]=="show_detail":
         result = check_show_detail(text)
         if result is None:
-            response_text = "Enter correct response please..."
+            response_text = "Enter correct response please."
             return False, response_text
         else:
             return True, result
         
     else:
-        return False
+        return False, "something went wrong"
 
     
 

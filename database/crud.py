@@ -1,13 +1,11 @@
 from database.database import users
-from typing import Dict
-
 
 # returns user details
 async def read_user(username: str):
     user = await users.find_one({"username": username}, {"_id": 0})
     return user
 
-
+# creates user
 async def create_user(username: str, income: int, pay_date: int):
     user = await read_user(username)
     if user:
@@ -29,7 +27,7 @@ async def create_user(username: str, income: int, pay_date: int):
         else:
             return False
 
-
+# updates user
 async def update_user(username: str, data: dict):
     result = await users.update_one({"username": username}, {"$set": data})
     if result.modified_count:

@@ -9,7 +9,7 @@ from responses.response import (
     state_ids
 )
 
-
+# state_id -> state function
 states = {
     state_ids["start"]: start,
     state_ids["income_and_date"]: income_and_date,
@@ -20,13 +20,14 @@ states = {
     state_ids["cancel"]: cancel
 }
 
-active_users = set()
-active_users_state = dict()
+active_users = set()            # contains active user's username
+active_users_state = dict()     # username -> state_id
 
 
 async def generate_response(text, username):
-    print(active_users_state)
-    print(id(active_users_state))
+    # print(active_users_state)
+    # print(id(active_users_state))
+    
     # user is active
     if username in active_users:
         
@@ -37,8 +38,6 @@ async def generate_response(text, username):
             active_users.remove(username)
         else:
             active_users_state[username] = next_state_id
-        print("user next state:", next_state_id)
-        print("users state after:", active_users_state)
         return resp
 
     # user is not active
@@ -50,6 +49,4 @@ async def generate_response(text, username):
             active_users.remove(username)
         else:
             active_users_state[username] = next_state_id
-        print("user next state:", next_state_id)
-        print("users state after:", active_users_state)
         return resp
